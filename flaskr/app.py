@@ -1,14 +1,14 @@
 import os
 from flask import Flask
 from flask_cors import CORS
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 from .api import continious_auth
 from .database import create_db_integration
 
 BLUEPRINTS = [continious_auth]
 
-load_dotenv('C:/Users/danya/PycharmProjects/continious-auth')
+load_dotenv(find_dotenv())
 
 
 def create_app(config=None, app_name="continious-auth-microservice", blueprints=None):
