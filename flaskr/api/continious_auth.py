@@ -19,6 +19,7 @@ def chunk():
                 positionY=raw_data_chunk["positionY"],
                 timestamp=raw_data_chunk["timestamp"],
                 windowName=raw_data_chunk["windowName"],
+                button=raw_data_chunk["button"],
                 userId=raw_data_chunk["userId"]
             )
 
