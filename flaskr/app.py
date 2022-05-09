@@ -5,6 +5,7 @@ from dotenv import load_dotenv, find_dotenv
 
 from .api import continious_auth
 from .database import create_db_integration
+from .util import start_features_extracting
 
 BLUEPRINTS = [continious_auth]
 
@@ -12,6 +13,7 @@ load_dotenv(find_dotenv())
 
 
 def create_app(config=None, app_name="continious-auth-microservice", blueprints=None):
+    start_features_extracting()
     app = Flask(
         app_name,
     )
