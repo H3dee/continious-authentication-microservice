@@ -35,31 +35,41 @@ def chunk():
         return {"status": "400", "message": "The request payload is not in JSON format"}
 
 
-@continious_auth.route("complete", methods=["GET"])
+@continious_auth.route("complete", methods=["POST"])
 def complete():
-    raw_events_data = RawEventsData.query.all()
+    if request.is_json:
+        body = request.get_json()
+        user_id = body["userId"]
 
-    directory_path = settings.TRAINING_RAW_DATA_BASE_FOLDER + "/user1"
+        raw_events_data = RawEventsData.query.filter_by(userId=user_id).order_by("timestamp").all()
+        data_not_found = len(raw_events_data) == 0
 
-    if not path.exists(directory_path):
-        mkdir(directory_path)
+        if data_not_found:
+            return {"message": "Collected data were not found"}
 
-    target_file_path = directory_path + '/raw_events_data.csv'
-    headers = ["event", "positionX", "positionY", "timestamp", "windowName", "userId", "id", "button"]
+        directory_path = settings.TRAINING_RAW_DATA_BASE_FOLDER + "/user" + str(user_id)
 
-    mapped_data = [
-        {
-            "event": data_chunk.event,
-            "positionX": data_chunk.positionX,
-            "positionY": data_chunk.positionY,
-            "timestamp": data_chunk.timestamp,
-            "windowName": data_chunk.windowName,
-            "userId": data_chunk.userId,
-            "id": data_chunk.id,
-            "button": data_chunk.button
-        } for data_chunk in raw_events_data
-    ]
+        if not path.exists(directory_path):
+            mkdir(directory_path)
 
-    sql_query_to_csv(target_file_path, mapped_data, headers)
+        target_file_path = directory_path + '/raw_events_data.csv'
+        headers = ["event", "positionX", "positionY", "timestamp", "windowName", "userId", "id", "button"]
 
-    return {"message": "success"}
+        mapped_data = [
+            {
+                "event": data_chunk.event,
+                "positionX": data_chunk.positionX,
+                "positionY": data_chunk.positionY,
+                "timestamp": data_chunk.timestamp,
+                "windowName": data_chunk.windowName,
+                "userId": data_chunk.userId,
+                "id": data_chunk.id,
+                "button": data_chunk.button
+            } for data_chunk in raw_events_data
+        ]
+
+        sql_query_to_csv(target_file_path, mapped_data, headers)
+
+        return {"message": "success"}
+    else:
+        return {"status": "400", "message": "The request payload is not in JSON format"}
