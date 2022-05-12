@@ -259,6 +259,7 @@ def process_files(case):
 
     if case == 'test':
         print("public labels: " + str(len(dlabels)))
+
     print("SESSION_CUT: " + str(st.SESSION_CUT))
     if st.SESSION_CUT == 1:
         print("NUM_ACTIONS: "+str(st.NUM_ACTIONS))

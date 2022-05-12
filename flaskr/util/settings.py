@@ -8,7 +8,7 @@ EVAL_TEST_UNIT = 0
 NUM_EVAL_ACTIONS = 30
 
 # For input
-BASE_FOLDER = 'C:/Users/danya/Downloads/'
+BASE_FOLDER = 'C:/Users/danya/PycharmProjects/continious-auth/flaskr/util/output/'
 TRAINING_FOLDER = 'training_files'
 TEST_FOLDER = 'test_files'
 
@@ -16,6 +16,7 @@ TEST_FOLDER = 'test_files'
 PUBLIC_LABELS = 'public_labels.csv'
 TRAINING_FEATURE_FILENAME = 'flaskr/util/output/training_features.csv'
 ACTION_FILENAME = 'flaskr/util/output/balabit_actions.csv'
+TRAINING_RAW_DATA_BASE_FOLDER = 'flaskr/util/output/training_files'
 
 GLOBAL_DELTA_TIME = 10
 GLOBAL_MIN_ACTION_LENGTH = 4

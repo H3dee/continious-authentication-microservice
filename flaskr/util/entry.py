@@ -14,6 +14,3 @@ def start_features_extracting():
     # st.CASE = 'test'
     # rd.process_files(st.CASE)
     return
-
-
-start_features_extracting()

@@ -27,20 +27,25 @@ def compute_action_features(x, y, t, action_code, action_file, n_from, n_to):
 
     if st.INTERPOLATION_TYPE != 'NO':
         result = None
+
         if st.INTERPOLATION_TYPE == 'LINEAR':
             xyt_line_array = np.column_stack((np.array(x), np.array(y), np.array(t)))
             result = ts.time_sample_interpolation_linear(xyt_line_array, st.FREQUENCY)
+
         if st.INTERPOLATION_TYPE == 'POLINOMIAL':
             xyt_line_array = np.column_stack((np.array(x), np.array(y), np.array(t)))
             result = ts.time_sample_interpolation_polinomial(xyt_line_array, st.FREQUENCY)
+
         if st.INTERPOLATION_TYPE == 'SPLINE':
             xyt_line_array = np.column_stack((np.array(x), np.array(y), np.array(t)))
             result = ts.time_sample_interpolation_spline(xyt_line_array, st.FREQUENCY)
+
         if result != None:
             x = result[:, 0]
             y = result[:, 1]
             t = result[:, 2]
             n = len(x)
+
         else:
             print('Interpolation error. No interpolation.')
             print('\t' + str(n_from) + '-' + str(n_to) + " len: " + str(n))
