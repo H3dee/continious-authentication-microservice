@@ -14,8 +14,8 @@ TEST_FOLDER = 'test_files'
 
 # For output
 PUBLIC_LABELS = 'public_labels.csv'
-TRAINING_FEATURE_FILENAME = 'flaskr/util/output/training_features.csv'
-ACTION_FILENAME = 'flaskr/util/output/balabit_actions.csv'
+TRAINING_FEATURE_FILENAME = 'flaskr/util/output/features_with_classes.csv'
+ACTION_FILENAME = 'flaskr/util/output/features.csv'
 TRAINING_RAW_DATA_BASE_FOLDER = 'flaskr/util/output/training_files'
 
 GLOBAL_DELTA_TIME = 10

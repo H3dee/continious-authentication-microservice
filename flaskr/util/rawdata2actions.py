@@ -1,6 +1,7 @@
 import os
 import csv
 
+from flaskr.util import csv_helpers as helpers
 from flaskr.util import settings as st
 from flaskr.util import actions
 
@@ -61,19 +62,6 @@ def process_session1(filename, action_file):
         n_to = counter
         actions.process_point_click_actions(data, action_file, n_from, n_to)
         return
-
-
-def print_csv_header_action(feature_file):
-    print("printCsvHeaderAction")
-    feature_file.write("type_of_action,traveled_distance_pixel,elapsed_time,direction_of_movement,")
-    feature_file.write("straightness,num_points,sum_of_angles,mean_curv,sd_curv,max_curv,min_curv,mean_omega,"
-                       "sd_omega,max_omega,min_omega,")
-    feature_file.write("largest_deviation,dist_end_to_end_line,num_critical_points,")
-    feature_file.write("mean_vx,sd_vx,max_vx,min_vx,mean_vy,sd_vy,max_vy,min_vy,mean_v,sd_v,max_v,min_v,mean_a,sd_a,"
-                       "max_a,min_a,mean_jerk,sd_jerk,max_jerk,min_jerk,a_beg_time,class,n_from,n_to")
-
-    feature_file.write("\n")
-    return
 
 
 def print_session2(userid, feature_file):
@@ -187,42 +175,35 @@ def process_files():
 
     directory = os.fsencode(st.BASE_FOLDER + st.TRAINING_FOLDER)
 
-    # HEADER
     if st.SESSION_CUT == 2:
-        print_csv_header_action(feature_file)
-
-    counter = 0
+        helpers.print_csv_header_action(feature_file)
 
     for fdir in os.listdir(directory):
-        dirname = os.fsdecode(fdir)
-        print('User: ' + dirname)
+        dir_name = os.fsdecode(fdir)
+        print('User: ' + dir_name)
 
-        userdirectory = st.BASE_FOLDER + st.TRAINING_FOLDER + '/' + dirname
-        userid = dirname[4:len(dirname)]
+        user_directory = st.BASE_FOLDER + st.TRAINING_FOLDER + '/' + dir_name
+        userid = dir_name[4:len(dir_name)]
 
-        for file in os.listdir(userdirectory):
-            fname = os.fsdecode(file)
-            filename = userdirectory + '/' + os.fsdecode(file)
-            counter += 1
+        for file in os.listdir(user_directory):
+            file_name = os.fsdecode(file)
+            file_path = user_directory + '/' + os.fsdecode(file)
 
-            print('File: ' + fname)
+            print('File: ' + file_name)
 
-            # split session into actions
+            # compute features
             action_file = open(st.ACTION_FILENAME, "w")
             action_file.write(st.ACTION_CSV_HEADER)
 
-            process_session1(filename, action_file)
+            process_session1(file_path, action_file)
 
             action_file.close()
-            # end split
 
             if st.SESSION_CUT == 2:
+                # add classes to rows
                 print_session2(userid, feature_file)
 
     feature_file.close()
-    print("Num session files: " + str(counter))
-
     print("SESSION_CUT: " + str(st.SESSION_CUT))
-    if st.SESSION_CUT == 1:
-        print("NUM_ACTIONS: "+str(st.NUM_ACTIONS))
+
     return
