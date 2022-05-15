@@ -6,9 +6,9 @@ from flaskr.util import settings as st
 from flaskr.util import actions
 
 
-def process_session1(filename, action_file):
+def compute_features(filename, action_file):
     counter = 1
-    prevrow = None
+    prev_row = None
     n_from = 2
     n_to = 2
 
@@ -19,7 +19,7 @@ def process_session1(filename, action_file):
         for row in reader:
             counter = counter + 1
 
-            if prevrow != None and prevrow == row:
+            if prev_row != None and prev_row == row:
                 continue
 
             item = {
@@ -31,9 +31,9 @@ def process_session1(filename, action_file):
             }
 
             if row["button"] == 'Scroll':
-                if prevrow != None:
-                    item['x'] = prevrow['x']
-                    item['y'] = prevrow['y']
+                if prev_row != None:
+                    item['x'] = prev_row['x']
+                    item['y'] = prev_row['y']
 
             if row['button'] == 'Left' and row['event'] == 'Released':
                 data.append(item)
@@ -43,11 +43,11 @@ def process_session1(filename, action_file):
                     n_from = counter
                     continue
 
-                if prevrow != None and prevrow['event'] == 'Drag':
+                if prev_row != None and prev_row['event'] == 'Drag':
                     n_to = counter
                     actions.process_drag_actions(data, action_file, n_from, n_to)
 
-                if prevrow != None and prevrow['event'] == 'Pressed':
+                if prev_row != None and prev_row['event'] == 'Pressed':
                     n_to = counter
                     actions.process_point_click_actions(data, action_file, n_from, n_to)
 
@@ -57,151 +57,168 @@ def process_session1(filename, action_file):
             else:
                 if int(item['x']) < st.X_LIMIT or int(item['y']) < st.Y_LIMIT:
                     data.append(item)
-            prevrow = row
+            prev_row = row
 
         n_to = counter
         actions.process_point_click_actions(data, action_file, n_from, n_to)
         return
 
 
-def print_session2(userid, feature_file):
-    action_file = open(st.ACTION_FILENAME, "r")
+def add_class_to_features(userid, target_features_file_path, features_by_action_file_path):
+    action_file = open(features_by_action_file_path, "r")
     reader = csv.DictReader(action_file)
 
     for row in reader:
-        feature_file.write(row["type_of_action"])
-        feature_file.write(",")
-        feature_file.write(row["traveled_distance_pixel"])
-        feature_file.write(",")
-        feature_file.write(row["elapsed_time"])
-        feature_file.write(",")
-        feature_file.write(row["direction_of_movement"])
-        feature_file.write(",")
-        feature_file.write(row["straightness"])
-        feature_file.write(",")
-        feature_file.write(row["num_points"])
-        feature_file.write(",")
-        feature_file.write(row["sum_of_angles"])
-        feature_file.write(",")
+        target_features_file_path.write(row["type_of_action"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["traveled_distance_pixel"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["elapsed_time"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["direction_of_movement"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["straightness"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["num_points"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["sum_of_angles"])
+        target_features_file_path.write(",")
 
-        feature_file.write(row["mean_curv"])
-        feature_file.write(",")
-        feature_file.write(row["sd_curv"])
-        feature_file.write(",")
-        feature_file.write(row["max_curv"])
-        feature_file.write(",")
-        feature_file.write(row["min_curv"])
-        feature_file.write(",")
+        target_features_file_path.write(row["mean_curv"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["sd_curv"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["max_curv"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["min_curv"])
+        target_features_file_path.write(",")
 
-        feature_file.write(row["mean_omega"])
-        feature_file.write(",")
-        feature_file.write(row["sd_omega"])
-        feature_file.write(",")
-        feature_file.write(row["max_omega"])
-        feature_file.write(",")
-        feature_file.write(row["min_omega"])
-        feature_file.write(",")
+        target_features_file_path.write(row["mean_omega"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["sd_omega"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["max_omega"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["min_omega"])
+        target_features_file_path.write(",")
 
-        feature_file.write(row["largest_deviation"])
-        feature_file.write(",")
-        feature_file.write(row["dist_end_to_end_line"])
-        feature_file.write(",")
-        feature_file.write(row["num_critical_points"])
-        feature_file.write(",")
+        target_features_file_path.write(row["largest_deviation"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["dist_end_to_end_line"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["num_critical_points"])
+        target_features_file_path.write(",")
 
-        feature_file.write(row["mean_vx"])
-        feature_file.write(",")
-        feature_file.write(row["sd_vx"])
-        feature_file.write(",")
-        feature_file.write(row["max_vx"])
-        feature_file.write(",")
-        feature_file.write(row["min_vx"])
-        feature_file.write(",")
+        target_features_file_path.write(row["mean_vx"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["sd_vx"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["max_vx"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["min_vx"])
+        target_features_file_path.write(",")
 
-        feature_file.write(row["mean_vy"])
-        feature_file.write(",")
-        feature_file.write(row["sd_vy"])
-        feature_file.write(",")
-        feature_file.write(row["max_vy"])
-        feature_file.write(",")
-        feature_file.write(row["min_vy"])
-        feature_file.write(",")
+        target_features_file_path.write(row["mean_vy"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["sd_vy"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["max_vy"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["min_vy"])
+        target_features_file_path.write(",")
 
-        feature_file.write(row["mean_v"])
-        feature_file.write(",")
-        feature_file.write(row["sd_v"])
-        feature_file.write(",")
-        feature_file.write(row["max_v"])
-        feature_file.write(",")
-        feature_file.write(row["min_v"])
-        feature_file.write(",")
+        target_features_file_path.write(row["mean_v"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["sd_v"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["max_v"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["min_v"])
+        target_features_file_path.write(",")
 
-        feature_file.write(row["mean_a"])
-        feature_file.write(",")
-        feature_file.write(row["sd_a"])
-        feature_file.write(",")
-        feature_file.write(row["max_a"])
-        feature_file.write(",")
-        feature_file.write(row["min_a"])
-        feature_file.write(",")
+        target_features_file_path.write(row["mean_a"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["sd_a"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["max_a"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["min_a"])
+        target_features_file_path.write(",")
 
-        feature_file.write(row["mean_jerk"])
-        feature_file.write(",")
-        feature_file.write(row["sd_jerk"])
-        feature_file.write(",")
-        feature_file.write(row["max_jerk"])
-        feature_file.write(",")
-        feature_file.write(row["min_jerk"])
-        feature_file.write(",")
+        target_features_file_path.write(row["mean_jerk"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["sd_jerk"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["max_jerk"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["min_jerk"])
+        target_features_file_path.write(",")
 
-        feature_file.write(row["a_beg_time"])
-        feature_file.write(",")
+        target_features_file_path.write(row["a_beg_time"])
+        target_features_file_path.write(",")
 
-        feature_file.write(userid + ",")
-        feature_file.write(row["n_from"])
-        feature_file.write(",")
-        feature_file.write(row["n_to"])
+        target_features_file_path.write(userid + ",")
+        target_features_file_path.write(row["n_from"])
+        target_features_file_path.write(",")
+        target_features_file_path.write(row["n_to"])
 
-        feature_file.write("\n")
+        target_features_file_path.write("\n")
 
     action_file.close()
     return
 
 
-def process_files():
-    feature_filename = st.TRAINING_FEATURE_FILENAME
+def process_files(user_folder_path=None):
+    if user_folder_path is None:
+        feature_filename = st.TRAINING_FEATURE_FILENAME
+        directory = os.fsencode(st.BASE_FOLDER + st.TRAINING_FOLDER)
+    else:
+        feature_filename = st.TEST_DATA_FOLDER + '/' + user_folder_path + '/features_with_classes.csv'
+        directory = st.BASE_FOLDER + st.TEST_FOLDER + '/' + user_folder_path
 
     feature_file = open(feature_filename, "w")
-
-    directory = os.fsencode(st.BASE_FOLDER + st.TRAINING_FOLDER)
 
     if st.SESSION_CUT == 2:
         helpers.print_csv_header_action(feature_file)
 
-    for fdir in os.listdir(directory):
-        dir_name = os.fsdecode(fdir)
-        print('User: ' + dir_name)
+    if user_folder_path is not None:
+        raw_data_file_path = directory + '/' + 'raw_events_data.csv'
+        user_id = user_folder_path[5:len(user_folder_path)]
 
-        user_directory = st.BASE_FOLDER + st.TRAINING_FOLDER + '/' + dir_name
-        userid = dir_name[4:len(dir_name)]
+        features_without_class_file_path = directory + '/features.csv'
+        features_without_class_file = open(features_without_class_file_path, "w")
+        features_without_class_file.write(st.ACTION_CSV_HEADER)
 
-        for file in os.listdir(user_directory):
-            file_name = os.fsdecode(file)
-            file_path = user_directory + '/' + os.fsdecode(file)
+        compute_features(raw_data_file_path, features_without_class_file)
 
-            print('File: ' + file_name)
+        features_without_class_file.close()
 
-            # compute features
-            action_file = open(st.ACTION_FILENAME, "w")
-            action_file.write(st.ACTION_CSV_HEADER)
+        add_class_to_features(user_id, feature_file, features_without_class_file_path)
+    else:
+        for fdir in os.listdir(directory):
+            dir_name = os.fsdecode(fdir)
+            print('User: ' + dir_name)
 
-            process_session1(file_path, action_file)
+            user_directory = st.BASE_FOLDER + st.TRAINING_FOLDER + '/' + dir_name
+            user_id = dir_name[4:len(dir_name)]
 
-            action_file.close()
+            for file in os.listdir(user_directory):
+                file_name = os.fsdecode(file)
+                raw_data_file_path = user_directory + '/' + file_name
 
-            if st.SESSION_CUT == 2:
-                # add classes to rows
-                print_session2(userid, feature_file)
+                print('File: ' + file_name)
+
+                # compute features
+                features_without_class_file = open(st.ACTION_FILENAME, "w")
+                features_without_class_file.write(st.ACTION_CSV_HEADER)
+
+                compute_features(raw_data_file_path, features_without_class_file)
+
+                features_without_class_file.close()
+
+                if st.SESSION_CUT == 2:
+                    # add classes to rows
+                    add_class_to_features(user_id, feature_file, st.ACTION_FILENAME)
 
     feature_file.close()
     print("SESSION_CUT: " + str(st.SESSION_CUT))

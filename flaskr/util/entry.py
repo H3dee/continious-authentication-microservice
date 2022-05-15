@@ -5,10 +5,10 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-def start_features_extracting():
+def start_features_extracting(path=None):
     st.SESSION_CUT = 2
-    print("***Computing training features")
-    st.CASE = 'training'
-    rd.process_files()
+    print("Computing features")
+
+    rd.process_files(path)
 
     return

@@ -1,7 +1,7 @@
 from flask import Blueprint, request
 from os import mkdir, path
 
-from ..util import sql_query_to_csv, settings
+from ..util import sql_query_to_csv, settings, start_features_extracting
 from ..models import RawEventsData
 from ..database import db
 
@@ -14,21 +14,48 @@ def chunk():
         body = request.get_json()
         chunk_records = []
 
-        for raw_data_chunk in body["chunks"]:
-            record = RawEventsData(
-                event=raw_data_chunk["event"],
-                positionX=raw_data_chunk["positionX"],
-                positionY=raw_data_chunk["positionY"],
-                timestamp=raw_data_chunk["timestamp"],
-                windowName=raw_data_chunk["windowName"],
-                button=raw_data_chunk["button"],
-                userId=raw_data_chunk["userId"]
-            )
+        if body["mode"] == "training":
+            for raw_data_chunk in body["chunks"]:
+                record = RawEventsData(
+                    event=raw_data_chunk["event"],
+                    positionX=raw_data_chunk["positionX"],
+                    positionY=raw_data_chunk["positionY"],
+                    timestamp=raw_data_chunk["timestamp"],
+                    windowName=raw_data_chunk["windowName"],
+                    button=raw_data_chunk["button"],
+                    userId=raw_data_chunk["userId"]
+                )
 
-            chunk_records.append(record)
+                chunk_records.append(record)
 
-        db.session.add_all(chunk_records)
-        db.session.commit()
+            db.session.add_all(chunk_records)
+            db.session.commit()
+        else:
+            chunk_records = [
+                {
+                    "event": raw_data_chunk["event"],
+                    "positionX": raw_data_chunk["positionX"],
+                    "positionY": raw_data_chunk["positionY"],
+                    "timestamp": raw_data_chunk["timestamp"],
+                    "windowName": raw_data_chunk["windowName"],
+                    "userId": raw_data_chunk["userId"],
+                    "id": i + 1,
+                    "button": raw_data_chunk["button"]
+                } for i, raw_data_chunk in enumerate(body["chunks"])
+            ]
+
+            user_id = chunk_records[0]["userId"]
+            user_directory = '/user' + str(user_id)
+            full_directory_path = settings.TEST_DATA_FOLDER + user_directory
+
+            if not path.exists(full_directory_path):
+                mkdir(full_directory_path)
+
+            target_file_path = full_directory_path + '/raw_events_data.csv'
+            headers = ["event", "positionX", "positionY", "timestamp", "windowName", "userId", "id", "button"]
+
+            sql_query_to_csv(target_file_path, chunk_records, headers)
+            start_features_extracting(user_directory)
 
         return {"message": "chunk successfully added"}
     else:
