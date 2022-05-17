@@ -56,6 +56,10 @@ class RF:
 
         return data
 
+    def prepare_test_dataset(self, data):
+        data.loc[lambda x: x['class'] == self.user_id, 'class'] = 1
+        return data
+
     def split_and_normalize_dataset(self, dataset):
         dataset = shuffle(dataset)
         y = dataset['class']
@@ -75,8 +79,8 @@ class RF:
         return x, y
 
     def split_and_normalize_test_dataset(self, dataset):
-        y = dataset['islegal']
-        dataset = dataset.drop(['class', 'type_of_action', 'islegal'], axis=1)
+        y = dataset['class']
+        dataset = dataset.drop(['class', 'type_of_action'], axis=1)
         values = dataset.values
         with open(f'ml_normalization_state_userId_{self.user_id}.pkl', 'rb') as f:
             scaler = pickle.load(f)

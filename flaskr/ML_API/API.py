@@ -38,7 +38,8 @@ def validate_user(data, user_id):
     """
 
     rf = classifiers.RF(user_id)
-    test_df = pd.read_csv(data)
+    df = pd.read_csv(data)
+    test_df = rf.prepare_test_dataset(df)
     x, y = rf.split_and_normalize_test_dataset(test_df)
     is_valid = rf.predict(x, y)
 
