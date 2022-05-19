@@ -35,7 +35,7 @@ def compute_features(filename, action_file):
                     item['x'] = prev_row['x']
                     item['y'] = prev_row['y']
 
-            if row['button'] == 'Left' and row['event'] == 'Released':
+            if (row['button'] == 'Left' or row['button'] == 'Right') and row['event'] == 'Released':
                 data.append(item)
 
                 if len(data) <= 2:

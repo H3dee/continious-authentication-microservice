@@ -345,7 +345,7 @@ def process_drag_actions(data, action_file, n_from, n_to):
             y.append(item['y'])
             t.append(act_time)
 
-        if act_button == 'Left' and act_state == 'Pressed':
+        if (act_button == 'Left' or act_button == 'Right') and act_state == 'Pressed':
             if len(t) > st.GLOBAL_MIN_ACTION_LENGTH:
                 stop = n_from + counter - 2
                 if st.GLOBAL_DEBUG:
@@ -358,7 +358,7 @@ def process_drag_actions(data, action_file, n_from, n_to):
             x.append(item['x'])
             y.append(item['y'])
             t.append(act_time)
-        if act_button == 'Left' and act_state == 'Released':
+        if (act_button == 'Left' or act_button == 'Right') and act_state == 'Released':
             x.append(item['x'])
             y.append(item['y'])
             t.append(act_time)

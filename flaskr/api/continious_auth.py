@@ -100,3 +100,10 @@ def complete():
         return {"message": "success"}
     else:
         return {"status": "400", "message": "The request payload is not in JSON format"}
+
+
+@continious_auth.route("train", methods=["get"])
+def train():
+    start_features_extracting()
+
+    return {"message": "success"}
