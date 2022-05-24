@@ -2,6 +2,7 @@ from flask import Blueprint, request
 from os import mkdir, path
 
 from ..util import sql_query_to_csv, settings, start_features_extracting
+from ..ML_API import API
 from ..models import RawEventsData
 from ..database import db
 
@@ -30,6 +31,8 @@ def chunk():
 
             db.session.add_all(chunk_records)
             db.session.commit()
+
+            return {"message": "success"}
         else:
             chunk_records = [
                 {
@@ -57,7 +60,12 @@ def chunk():
             sql_query_to_csv(target_file_path, chunk_records, headers)
             start_features_extracting(user_directory)
 
-        return {"message": "chunk successfully added"}
+            path_to_target_file = full_directory_path + '/features_with_classes.csv'
+            features = open(path_to_target_file, 'r')
+
+            validation_result = API.validate_user(features, user_id)
+
+        return {"result":  validation_result}
     else:
         return {"status": "400", "message": "The request payload is not in JSON format"}
 
@@ -105,5 +113,10 @@ def complete():
 @continious_auth.route("train", methods=["get"])
 def train():
     start_features_extracting()
+
+    path_to_target_file = settings.TRAINING_FEATURE_FILENAME
+    features = open(path_to_target_file, 'r')
+
+    API.train_all(features)
 
     return {"message": "success"}

@@ -29,7 +29,7 @@ class RF:
 
     def tune_params(self, x, y):
         n_estimators = [int(x) for x in np.linspace(start=10, stop=80, num=10)]
-        max_features = ['auto', 'sqrt']
+        max_features = ['sqrt']
         max_depth = [2, 4]
         min_samples_split = [2, 5]
         min_samples_leaf = [1, 2]

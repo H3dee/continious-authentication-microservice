@@ -1,6 +1,6 @@
 import pandas as pd
-import classifiers
-import processing
+
+from ..ML_API import classifiers, processing
 
 
 def train_all(data):
